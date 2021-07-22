@@ -26,14 +26,14 @@ const multipleFileUpload = (req, res, next) => {
         referred: req.body.referred,
     });
     if (req.files) {
-        multipleFiles.form = req.files.form[0].originalname;
-        multipleFiles.photo = req.files.photo[0].originalname;
-        multipleFiles.citizenFront = req.files.citizenFront[0].originalname;
-        multipleFiles.citizenBack = req.files.citizenBack[0].originalname;
-        multipleFiles.vaucher = req.files.vaucher[0].originalname;
-        multipleFiles.owner = req.files.owner[0].originalname;
-        multipleFiles.fingerPrintRight = req.files.fingerPrintRight[0].originalname;
-        multipleFiles.fingerPrintLeft = req.files.fingerPrintLeft[0].originalname;
+        multipleFiles.form = req.files.form[0].path;
+        multipleFiles.photo = req.files.photo[0].path;
+        multipleFiles.citizenFront = req.files.citizenFront[0].path;
+        multipleFiles.citizenBack = req.files.citizenBack[0].path;
+        multipleFiles.vaucher = req.files.vaucher[0].path;
+        multipleFiles.owner = req.files.owner[0].path;
+        multipleFiles.fingerPrintRight = req.files.fingerPrintRight[0].path;
+        multipleFiles.fingerPrintLeft = req.files.fingerPrintLeft[0].path;
     }
     multipleFiles
         .save()
@@ -105,21 +105,21 @@ const updateFilesById = async (req, res) => {
         forms.registerDate = req.body.registerDate || forms.registerDate;
         forms.referred = req.body.referred || forms.referred;
         if (req.files) {
-            forms.form = req.files.form[0].originalname || forms.form ;
-            forms.photo = req.files.photo[0].originalname || forms.photo;
+            forms.form = req.files.form[0].path || forms.form ;
+            forms.photo = req.files.photo[0].path || forms.photo;
             forms.citizenFront =
-                req.files.citizenFront[0].originalname || forms.citizenFront;
+                req.files.citizenFront[0].path || forms.citizenFront;
             forms.citizenBack =
-                req.files.citizenBack[0].originalname || forms.citizenBack;
+                req.files.citizenBack[0].path || forms.citizenBack;
             forms.vaucher =
-                req.files.vaucher[0].originalname || forms.vaucher;
+                req.files.vaucher[0].path || forms.vaucher;
             forms.owner =
-                req.files.owner[0].originalname || forms.owner;
+                req.files.owner[0].path || forms.owner;
             forms.fingerPrintRight =
-                req.files.fingerPrintRight[0].originalname ||
+                req.files.fingerPrintRight[0].path ||
                 forms.fingerPrintRight;
             forms.fingerPrintLeft =
-                req.files.fingerPrintLeft[0].originalname ||
+                req.files.fingerPrintLeft[0].path ||
                 forms.fingerPrintLeft;
         }
 

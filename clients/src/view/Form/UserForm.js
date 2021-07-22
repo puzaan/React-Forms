@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from 'axios'
 import { makeStyles } from "@material-ui/core/styles";
 import {
     Typography,
@@ -102,7 +103,16 @@ const validater=()=>{
             [name]: value,
         });
     };
+    const [form , setForm] = useState([])
+useEffect(() => {
+const featchForms = async () =>{
+const res = await axios.get("http://localhost:5000/api/getMultipleFiles")
+const data = res.data;
 
+console.log(data)
+}
+featchForms();
+})
 
     const handleSubmit = e =>{
         e.preventDefault()
@@ -116,7 +126,7 @@ const validater=()=>{
     }
     return (
         <Card className={classes.root} variant="outlined">
-            <form name="password-reset-form"  methhod = "POST">
+            <form name="password-reset-form"  onSubmit ={handleSubmit}>
                 <CardContent>
                     <CardContent>
                         <Typography variant="body1">व्यक्तिगत विवरण</Typography>
