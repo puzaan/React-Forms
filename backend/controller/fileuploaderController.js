@@ -1,23 +1,11 @@
-'use strict';
+"use strict";
 
-import MultipleFile from '../module/multiplefile.js'
+import MultipleFile from "../module/multiplefile.js";
 
-
-const multipleFileUpload = async (req, res, next) => {
-    try{
-        let filesArray = [];
-        req.files.forEach(element => {
-            const file = {
-                fileName: element.originalname,
-                filePath: element.path,
-                fileType: element.mimetype,
-                fileSize: fileSizeFormatter(element.size, 2)
-            }
-            filesArray.push(file);
-        });
-        const multipleFiles = new MultipleFile({
-            name: req.body.name,
-        email:req.body.email,
+const multipleFileUpload = (req, res, next) => {
+    const multipleFiles = new MultipleFile({
+        name: req.body.name,
+        email: req.body.email,
         gender: req.body.gender,
         citizenshipNo: req.body.citizenshipNo,
         bithOfDate: req.body.bithOfDate,
@@ -35,102 +23,122 @@ const multipleFileUpload = async (req, res, next) => {
         beneficiaryRelation: req.body.beneficiaryRelation,
         beneficiaryNo: req.body.beneficiaryNo,
         registerDate: req.body.registerDate,
-        referred: req.body.referred, 
-        files: filesArray 
-        });
-        await multipleFiles.save();
-        res.status(201).send('Files Uploaded Successfully');
-    }catch(error) {
-        res.status(400).send(error.message);
+        referred: req.body.referred,
+    });
+    if (req.files) {
+        multipleFiles.form = req.files.form[0].originalname;
+        multipleFiles.photo = req.files.photo[0].originalname;
+        multipleFiles.citizenFront = req.files.citizenFront[0].originalname;
+        multipleFiles.citizenBack = req.files.citizenBack[0].originalname;
+        multipleFiles.vaucher = req.files.vaucher[0].originalname;
+        multipleFiles.owner = req.files.owner[0].originalname;
+        multipleFiles.fingerPrintRight = req.files.fingerPrintRight[0].originalname;
+        multipleFiles.fingerPrintLeft = req.files.fingerPrintLeft[0].originalname;
     }
-}
-
+    multipleFiles
+        .save()
+        .then((response) => {
+            res.json({
+                response,
+            });
+        })
+        .catch((error) => {
+            res.json({
+                message: `error occured ${error}`,
+            });
+        });
+};
 
 const getallMultipleFiles = async (req, res, next) => {
-    try{
+    try {
         const files = await MultipleFile.find();
         res.status(200).send(files);
-    }catch(error) {
+    } catch (error) {
         res.status(400).send(error.message);
-    }
-}
-
-const getallMultipleFilesById = async (req, res, next) => {
-    try{
-        const files = await MultipleFile.findById(req.params.id)
-        res.status(200).send(files);
-    }catch(error) {
-        res.status(400).send(error.message);
-    }
-}
-
-
-const deletFilesById = async(req, res)=> {
-    const files = await MultipleFile.findById(req.params.id);
-    if(files){
-        const remove = await files.remove();
-        res.status(201);
-    res.json({
-        message: 'File deleted'
-    })
-
-    }else{
-        res.status(404)
-        throw new Error("file didnt found")
-    }
-    
-}
-
-
-const updateFilesById = async(req, res)=>{
-    const form = await MultipleFile.findById(req.params.id);
-    if(form){
-        form.name = req.body.name || form.name;
-        form.email = req.body.email || form.email;
-        form.gender = req.body.gender || form.gender;
-        form.citizenshipNo = req.body.citizenshipNo || form.citizenshipNo;
-        form.bithOfDate = req.body.bithOfDate || form.bithOfDate;
-        form.fatherName = req.body.fatherName || form.fatherName;
-        form.grandFatherName = req.body.grandFatherName || form.grandFatherName;
-        form.mobileNo = req.body.mobileNo || form.mobileNo;
-        form.phoneNo = req.body.phoneNo || form.phoneNo;
-        form.permanentPlace = req.body.permanentPlace || form.permanentPlace;
-        form.currentPlace = req.body.currentPlace || form.currentPlace;
-        form.temporaeyPlace = req.body.temporaeyPlace || form.temporaeyPlace;
-        form.bankName = req.body.bankName || form.bankName;
-        form.bankAccount = req.body.bankAccount || form.bankAccount;
-        form.beneficiaryName = req.body.beneficiaryName || form.beneficiaryName;
-        form.beneficiaryRelation = req.body.beneficiaryRelation || form.beneficiaryRelation;
-        form.beneficiaryNo = req.body.beneficiaryNo || form.beneficiaryNo;
-        form.registerDate = req.body.registerDate || form.registerDate;
-        form.referred = req.body.referred || form.referred;
-
-        const updatedForm = await form.save();
-        res.status(201);
-        res.json({
-            message: 'File Updated'
-        })
-    }else{
-        res.status(404)
-        throw new Error("invalid Data")
     }
 };
 
-
-
-
-
-
-
-
-const fileSizeFormatter = (bytes, decimal) => {
-    if(bytes === 0){
-        return '0 Bytes';
+const getallMultipleFilesById = async (req, res, next) => {
+    try {
+        const files = await MultipleFile.findById(req.params.id);
+        res.status(200).send(files);
+    } catch (error) {
+        res.status(400).send(error.message);
     }
-    const dm = decimal || 2;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'YB', 'ZB'];
-    const index = Math.floor(Math.log(bytes) / Math.log(1000));
-    return parseFloat((bytes / Math.pow(1000, index)).toFixed(dm)) + ' ' + sizes[index];
+};
 
-}
-export {multipleFileUpload, getallMultipleFiles, getallMultipleFilesById, deletFilesById, updateFilesById}
+const deletFilesById = async (req, res) => {
+    const files = await MultipleFile.findById(req.params.id);
+    if (files) {
+        const remove = await files.remove();
+        res.status(201);
+        res.json({
+            message: "File deleted",
+        });
+    } else {
+        res.status(404);
+        throw new Error("file didnt found");
+    }
+};
+
+const updateFilesById = async (req, res) => {
+    const forms = await MultipleFile.findById(req.params.id);
+    if (forms) {
+        forms.name = req.body.name || forms.name;
+        forms.email = req.body.email || forms.email;
+        forms.gender = req.body.gender || forms.gender;
+        forms.citizenshipNo = req.body.citizenshipNo || forms.citizenshipNo;
+        forms.bithOfDate = req.body.bithOfDate || forms.bithOfDate;
+        forms.fatherName = req.body.fatherName || forms.fatherName;
+        forms.grandFatherName = req.body.grandFatherName || forms.grandFatherName;
+        forms.mobileNo = req.body.mobileNo || forms.mobileNo;
+        forms.phoneNo = req.body.phoneNo || forms.phoneNo;
+        forms.permanentPlace = req.body.permanentPlace || forms.permanentPlace;
+        forms.currentPlace = req.body.currentPlace || forms.currentPlace;
+        forms.temporaeyPlace = req.body.temporaeyPlace || forms.temporaeyPlace;
+        forms.bankName = req.body.bankName || forms.bankName;
+        forms.bankAccount = req.body.bankAccount || forms.bankAccount;
+        forms.beneficiaryName = req.body.beneficiaryName || forms.beneficiaryName;
+        forms.beneficiaryRelation =
+            req.body.beneficiaryRelation || forms.beneficiaryRelation;
+        forms.beneficiaryNo = req.body.beneficiaryNo || forms.beneficiaryNo;
+        forms.registerDate = req.body.registerDate || forms.registerDate;
+        forms.referred = req.body.referred || forms.referred;
+        if (req.files) {
+            forms.form = req.files.form[0].originalname || forms.form ;
+            forms.photo = req.files.photo[0].originalname || forms.photo;
+            forms.citizenFront =
+                req.files.citizenFront[0].originalname || forms.citizenFront;
+            forms.citizenBack =
+                req.files.citizenBack[0].originalname || forms.citizenBack;
+            forms.vaucher =
+                req.files.vaucher[0].originalname || forms.vaucher;
+            forms.owner =
+                req.files.owner[0].originalname || forms.owner;
+            forms.fingerPrintRight =
+                req.files.fingerPrintRight[0].originalname ||
+                forms.fingerPrintRight;
+            forms.fingerPrintLeft =
+                req.files.fingerPrintLeft[0].originalname ||
+                forms.fingerPrintLeft;
+        }
+
+        const updatedForm = await forms.save();
+        res.status(201);
+        res.json({
+            
+            message: "File Updated",
+        });
+    } else {
+        res.status(404);
+        throw new Error("invalid Data");
+    }
+};
+
+export {
+    multipleFileUpload,
+    getallMultipleFiles,
+    getallMultipleFilesById,
+    deletFilesById,
+    updateFilesById,
+};

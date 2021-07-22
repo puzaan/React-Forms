@@ -76,7 +76,39 @@ const mulitipleFileSchema = Mongoose.Schema({
     referred: {
         type: String,
     },
-    files: [Object]
+    form :{
+            type: String,
+            required: true
+        },
+        photo:{
+            type: String,
+            required: true
+        },
+        citizenFront:{
+            type: String,
+            required: true
+        },
+        citizenBack:{
+            type: String,
+            required: true,
+        },
+        vaucher:{
+            type: String,
+            required: true,
+        },
+        owner:{
+            type: String,
+            required: true
+        },
+        fingerPrintRight:{
+            type: String,
+            required: true
+        },
+        fingerPrintLeft:{
+            type: String,
+            required: true
+        },
+    
 }, {timestamps: true});
 
 const MultipleFile = Mongoose.model("MultipleFile", mulitipleFileSchema);
